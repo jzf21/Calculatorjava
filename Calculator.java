@@ -8,7 +8,9 @@ public class Calculator {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(300, 300);
         frame.setLayout(new GridLayout(4, 4));
-
+        JLabel label = new JLabel("");
+        label.setSize(100, 100);
+        frame.add(label);
         JButton button1 = new JButton("1");
         JButton button2 = new JButton("2");
         JButton button3 = new JButton("3");
@@ -41,9 +43,94 @@ public class Calculator {
         frame.add(buttonEquals);
         button1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                System.out.println("1");
+                label.setText(label.getText() + "1");
             }
         });
+        button2.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                label.setText(label.getText() + "2");
+            }
+        });
+        button3.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                label.setText(label.getText() + "3");
+            }
+        });
+        button4.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                label.setText(label.getText() + "4");
+            }
+        });
+        button5.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                label.setText(label.getText() + "5");
+            }
+        });
+        button6.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                label.setText(label.getText() + "6");
+            }
+        });
+        button7.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                label.setText(label.getText() + "7");
+            }
+        });
+        button8.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                label.setText(label.getText() + "8");
+            }
+        });
+        button9.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                label.setText(label.getText() + "9");
+            }
+        });
+        button0.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                label.setText(label.getText() + "0");
+            }
+        });
+        buttonPlus.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                label.setText(label.getText() + "+");
+            }
+        });
+        buttonMinus.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                label.setText(label.getText() + "-");
+            }
+        });
+        buttonMultiply.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                label.setText(label.getText() + "*");
+            }
+        });
+        buttonDivide.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                label.setText(label.getText() + "/");
+            }
+        });
+        buttonEquals.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String[] numbers = label.getText().split("[+-/*]");
+                String[] operators = label.getText().split("[0-9]+");
+                int result = Integer.parseInt(numbers[0]);
+                for (int i = 1; i < numbers.length; i++) {
+                    if (operators[i].equals("+")) {
+                        result += Integer.parseInt(numbers[i]);
+                    } else if (operators[i].equals("-")) {
+                        result -= Integer.parseInt(numbers[i]);
+                    } else if (operators[i].equals("*")) {
+                        result *= Integer.parseInt(numbers[i]);
+                    } else if (operators[i].equals("/")) {
+                        result /= Integer.parseInt(numbers[i]);
+                    }
+                }
+                label.setText(Integer.toString(result));
+            }
+        });
+
         frame.setVisible(true);
     }
 
