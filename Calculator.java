@@ -12,22 +12,24 @@ public class Calculator extends JFrame {
     public Calculator() {
         super("Calculator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(300, 300);
+        setSize(600, 600);
         setVisible(true);
 
         container = getContentPane();
         stringField = new StringField();
 
-        container.setLayout(new FlowLayout());
+        container.setBounds(0, 0, 100, 150);
+        container.setLayout(new GridLayout(4, 1));
 
-        stringField.setPreferredSize(new Dimension(280, 30));
+        stringField.setPreferredSize(new Dimension(40, 30));
+        stringField.setFont(new Font("Arial", Font.PLAIN, 20));
         JButton equalsButton = new JButton("=");
         equalsButton.addActionListener(new ResultFinder(stringField));
 
         container.add(stringField);
         container.add(new CalcButtons(stringField)); // string field is a listener
-        container.add(equalsButton);
-
+        container.add(new FunctionalButtons(stringField));
+        container.setVisible(true);
     }
 
     public static void main(String[] arguments) {
@@ -44,6 +46,38 @@ class StringField extends JTextField implements ActionListener {
 
 }
 
+class FunctionalButtons extends JPanel {
+
+    public FunctionalButtons(JTextField stringField) {
+        setLayout(new GridLayout(3, 1));
+        JButton clearButton = new JButton("C");
+        JButton equalsButton = new JButton("=");
+        JButton deleteButton = new JButton("Del");
+
+        equalsButton.addActionListener(new ResultFinder(stringField));
+
+        clearButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                stringField.setText("");
+            }
+
+        });
+
+        deleteButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                String text = stringField.getText();
+                if (text.length() > 0) {
+                    stringField.setText(text.substring(0, text.length() - 1));
+                }
+            }
+        });
+        add(clearButton);
+        add(deleteButton);
+        add(equalsButton);
+    }
+
+}
+
 class CalcButton extends JButton {
     public CalcButton(String label, ActionListener listener) {
         super(label);
@@ -56,9 +90,10 @@ class CalcButtons extends JPanel {
     public CalcButtons(ActionListener stringField) {
 
         setLayout(new GridLayout(4, 3));
+        // paddding
         CalcButton[] numberButtons = new CalcButton[10];
         for (int i = 0; i < 10; i++) {
-            numberButtons[i] = new CalcButton(Integer.toString(i), stringField);
+            numberButtons[i] = new CalcButton(Integer.toString((i + 1) % 10), stringField);
             add(numberButtons[i]);
         }
         char Operators[] = { '+', '-', '*', '/', '(', ')' };
@@ -89,63 +124,53 @@ class ResultFinder implements ActionListener {
 
     public static double evaluate(String expression) {
         char[] tokens = expression.toCharArray();
+        Stack<Double> values = new Stack<Double>();        // 
 
-        // Stack for numbers: 'values'
-        Stack<Double> values = new Stack<Double>();
-
-        // Stack for Operators: 'ops'
-        Stack<Character> ops = new Stack<Character>();
+        Stack<Character> ops = new Stack<Character>();     // 
 
         for (int i = 0; i < tokens.length; i++) {
-            // Current token is a whitespace, skip it
             if (tokens[i] == ' ')
                 continue;
 
-            // Current token is a number, push it to stack for numbers
+            
             if (tokens[i] >= '0' && tokens[i] <= '9') {
                 StringBuffer sbuf = new StringBuffer();
-                // There may be more than one digits in number
                 while (i < tokens.length && tokens[i] >= '0' && tokens[i] <= '9')
                     sbuf.append(tokens[i++]);
-                i--; // to compensate for the i++ in the for loop
+                i--; 
                 values.push(Double.parseDouble(sbuf.toString()));
             }
 
-            // Current token is an opening brace, push it to 'ops'
+            
             else if (tokens[i] == '(')
                 ops.push(tokens[i]);
 
-            // Closing brace encountered, solve entire brace
+            
             else if (tokens[i] == ')') {
                 while (ops.peek() != '(')
                     values.push(applyOp(ops.pop(), values.pop(), values.pop()));
                 ops.pop();
             }
 
-            // Current token is an operator.
+            
             else if (tokens[i] == '+' || tokens[i] == '-' || tokens[i] == '*' || tokens[i] == '/') {
-                // While top of 'ops' has same or greater precedence to current
-                // token, which is an operator. Apply operator on top of 'ops'
-                // to top two elements in values stack
+                
                 while (!ops.empty() && hasPrecedence(tokens[i], ops.peek()))
                     values.push(applyOp(ops.pop(), values.pop(), values.pop()));
 
-                // Push current token to 'ops'.
+                
                 ops.push(tokens[i]);
             }
         }
 
-        // Entire expression has been parsed at this point, apply remaining
-        // ops to remaining values
+        
         while (!ops.empty())
             values.push(applyOp(ops.pop(), values.pop(), values.pop()));
 
-        // Top of 'values' contains result, return
         return values.pop();
     }
 
-    // Returns true if 'op2' has higher or same precedence as 'op1',
-    // otherwise returns false.
+    
     public static boolean hasPrecedence(char op1, char op2) {
         if (op2 == '(' || op2 == ')')
             return false;
@@ -155,8 +180,7 @@ class ResultFinder implements ActionListener {
             return true;
     }
 
-    // A utility method to apply an operator 'op' on operands 'a'
-    // and 'b'. Return the result.
+   
     public static double applyOp(char op, double b, double a) {
         switch (op) {
             case '+':
